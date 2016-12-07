@@ -38,25 +38,17 @@ public final class BitArray {
         return (int) numWords;
     }
 
-    private final class indexAndMask {
-        public final int index;
-        public final long mask;
-
-        public indexAndMask(long index) {
-            this.index = (int)(index >>> 6);
-            this.mask = 1L << (index & 0x3F);
-        }
-    }
-
     public boolean get(long index) {
-        final indexAndMask iam = new indexAndMask(index);
-        return (data[iam.index] & iam.mask) != 0;
+        final int arrayIndex = (int)(index >>> 6);
+        final long bitMask = 1L << (index & 0x3F);
+        return (data[arrayIndex] & bitMask) != 0;
     }
 
     public boolean set(long index) {
-        final indexAndMask iam = new indexAndMask(index);
-        if ((data[iam.index] & iam.mask) == 0) {
-            data[iam.index] |= iam.mask;
+        final int arrayIndex = (int)(index >>> 6);
+        final long bitMask = 1L << (index & 0x3F);
+        if ((data[arrayIndex] & bitMask) == 0) {
+            data[arrayIndex] |= bitMask;
             bitCount++;
             return true;
         }
@@ -64,9 +56,10 @@ public final class BitArray {
     }
 
     public boolean clear(long index) {
-        final indexAndMask iam = new indexAndMask(index);
-        if ((data[iam.index] & iam.mask) != 0) {
-            data[iam.index] &= ~iam.mask;
+        final int arrayIndex = (int)(index >>> 6);
+        final long bitMask = 1L << (index & 0x3F);
+        if ((data[arrayIndex] & bitMask) != 0) {
+            data[arrayIndex] &= ~bitMask;
             bitCount--;
             return true;
         }
